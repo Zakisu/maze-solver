@@ -13,46 +13,9 @@ def find_goal(graph):
             if graph[i][j] == 3:
                 goal_state.append([i, j])
 
-def check_above(row, column, graph):
-    row = row-1
+def check(row, column, graph):
     row_len = len(graph)-1
     column_len = len(graph[0])-1
-    if row > row_len or row < 0 or column > column_len or column < 0:
-        return False
-    else:
-        if (graph[row][column] == 1 or graph[row][column] == 3) and column >= 0:
-            return [row, column]
-        else:
-            return False
-
-def check_below(row, column, graph):
-    row = row+1
-    row_len = len(graph) - 1
-    column_len = len(graph[0]) - 1
-    if row > row_len or row < 0 or column > column_len or column < 0:
-        return False
-    else:
-        if (graph[row][column] == 1 or graph[row][column] == 3) and column >= 0:
-            return [row, column]
-        else:
-            return False
-
-def check_right(row, column, graph):
-    column = column + 1
-    row_len = len(graph) - 1
-    column_len = len(graph[0]) - 1
-    if row > row_len or row < 0 or column > column_len or column < 0:
-        return False
-    else:
-        if (graph[row][column] == 1 or graph[row][column] == 3) and column >= 0:
-            return [row, column]
-        else:
-            return False
-
-def check_left(row, column, graph):
-    column = column - 1
-    row_len = len(graph) - 1
-    column_len = len(graph[0]) - 1
     if row > row_len or row < 0 or column > column_len or column < 0:
         return False
     else:
@@ -76,44 +39,55 @@ initial_state = find_start(graph)
 goal_state = []
 find_goal(graph)
 memories.append([0,initial_state])
-for i in range(10):
+for i in range(default_depth):
     position = memories[i][1]
-    if check_above(position[0], position[1], graph) != False:
-        check = check_above(position[0], position[1], graph)
-        if check in goal_state:
-            memories.append([position, check])
+    row = position[0]
+    column = position[1]
+    #check above
+    is_available = check(row-1, column, graph)
+    if is_available != False:
+        if is_available in goal_state:
+            memories.append([position, is_available])
             break
         else:
-            memories.append([position, check])
-    if check_right(position[0], position[1], graph) != False:
-        check = check_right(position[0], position[1], graph)
-        if check in goal_state:
-            memories.append([position, check])
+            memories.append([position, is_available])
+    #check right
+    is_available = check(row, column+1, graph)
+    if is_available != False:
+        if is_available in goal_state:
+            memories.append([position, is_available])
             break
         else:
-            memories.append([position, check])
-    if check_below(position[0], position[1], graph) != False:
-        check = check_below(position[0], position[1], graph)
-        if check in goal_state:
-            memories.append([position, check])
+            memories.append([position, is_available])
+    #check below
+    is_available = check(row+1, column, graph)
+    if is_available != False:
+        if is_available in goal_state:
+            memories.append([position, is_available])
             break
         else:
-            memories.append([position, check])
-    if check_left(position[0], position[1], graph) != False:
-        check = check_left(position[0], position[1], graph)
-        if check in goal_state:
-            memories.append([position, check])
+            memories.append([position, is_available])
+    #check left
+    is_available = check(row, column-1, graph)
+    if is_available != False:
+        if is_available in goal_state:
+            memories.append([position, is_available])
             break
         else:
-            memories.append([position, check])
-print(memories)
+            memories.append([position, is_available])
 memories.reverse()
 search = memories[0][1]
+solve = []
 for i in range(len(memories)):
     if i == 0:
-        print(memories[i][1])
+        solve.append(memories[i][1])
     if memories[i][1] == search and memories[i][0] != 0:
         search = memories[i][0]
-        print(search)
+        solve.append(search)
     elif memories[i][0] == 0:
         break
+solve.reverse()
+print("Initial state :",initial_state)
+print("Goal state :", goal_state)
+print("Rute : ", end="")
+print(*solve, sep=" - ")
